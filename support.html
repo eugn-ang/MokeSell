@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MokeSell</title>
+    <title>Support</title>
     <link rel="stylesheet" href="styles.css">
     
 </head>
 <body>
     <header>
-        <h1><a href="index.html">MokeSell</a></h1>
+        <h1><a href="index.html">MokeSell - Support</a></h1>
         <nav class="category-nav">
             <ul>
                 <li><a href="#">Electronics</a></li>
@@ -35,9 +35,20 @@
         </ul>
     </div>
 
-    <section id="home">
-        <h2>Welcome to the Marketplace</h2>
-        <p>Buy and sell items easily, connect with sellers, and enjoy exclusive rewards.</p>
+    <section id="support">
+        <h2>Contact Support</h2>
+        <form>
+            <label for="issue">Select an issue:</label>
+            <select id="issue">
+                <option>Technical Issue</option>
+                <option>Complaint Against Seller</option>
+                <option>Other</option>
+            </select>
+            <br><br>
+            <textarea placeholder="Describe your issue..." rows="4"></textarea>
+            <br><br>
+            <button type="submit">Submit</button>
+        </form>
     </section>
 
     <footer>

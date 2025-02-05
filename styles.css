@@ -85,3 +85,32 @@ header {
     color: white;
     cursor: pointer;
 }
+
+.listing-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.listing {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.listing img {
+    width: 150px;
+    height: auto;
+}
+
+.favorite-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.favorite-btn:hover {
+    background: darkred;
+}

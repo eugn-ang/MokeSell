@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MokeSell</title>
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <header>
+        <h1>MokeSell</h1>
+        <nav class="category-nav">
+            <ul>
+                <li><a href="#">Electronics</a></li>
+                <li><a href="#">Fashion</a></li>
+                <li><a href="#">Luxury</a></li>
+                <li><a href="#">Cars</a></li>
+                <li><a href="#">Home & Living</a></li>
+            </ul>
+        </nav>
+        <div class="profile-icon" onclick="toggleSidebar()">
+            <img src="profile-icon.png" alt="Profile">
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <ul>
+            <li><a href="listings.html">Listings</a></li>
+            <li><a href="notifications.html">Notifications</a></li>
+            <li><a href="account.html">Account</a></li>
+            <li><a href="support.html">Support</a></li>
+        </ul>
+    </div>
+
+    <section id="home">
+        <h2>Welcome to the Marketplace</h2>
+        <p>Buy and sell items easily, connect with sellers, and enjoy exclusive rewards.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Marketplace. All rights reserved.</p>
+    </footer>
+    <script src="script.js" defer></script>
+</body>
+</html>

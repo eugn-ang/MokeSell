@@ -114,3 +114,8 @@ header {
 .favorite-btn:hover {
     background: darkred;
 }
+
+.logo img {
+    height: 250px; /* Adjust logo size */
+    width: auto; /* Maintain aspect ratio */
+}

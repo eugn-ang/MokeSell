@@ -3,50 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MokeSell</title>
+    <title>MokeSell - Modern Marketplace</title>
     <link rel="stylesheet" href="styles.css">
-    
 </head>
 <body>
     <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="img/MokeSell_transparent-.png" alt="Logo">
-            </a>
-        </div>
-        <nav class="category-nav">
-            <ul>
-                <li><a href="#">Electronics</a></li>
-                <li><a href="#">Fashion</a></li>
-                <li><a href="#">Luxury</a></li>
-                <li><a href="#">Cars</a></li>
-                <li><a href="#">Home & Living</a></li>
-            </ul>
-        </nav>
-        <div class="profile-icon" onclick="toggleSidebar()">
-            <img src="profile-icon.png" alt="Profile">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">MokeSell</a>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for items...">
+                <button class="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </button>
+            </div>
+            <nav class="nav-buttons">
+                <button id="sellButton" class="sell-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    Sell
+                </button>
+                <button id="loginButton" class="login-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Login
+                </button>
+                <button id="signupButton" class="signup-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 12v8M8 16h8M12 4a4 4 0 0 1 4 4v1h4v2h-4v4h-2V8h-2v2h-2V8a4 4 0 0 1 4-4z"/>
+                    </svg>
+                    Sign Up
+                </button>
+                
+            </nav>
         </div>
     </header>
 
-    <!-- Sidebar Menu -->
-    <div id="sidebar" class="sidebar">
-        <button class="close-btn" onclick="toggleSidebar()">×</button>
-        <ul>
-            <li><a href="listings.html">Listings</a></li>
-            <li><a href="notifications.html">Notifications</a></li>
-            <li><a href="account.html">Account</a></li>
-            <li><a href="support.html">Support</a></li>
-        </ul>
+    <nav class="category-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#" data-category="electronics">Electronics</a></li>
+                <li><a href="#" data-category="fashion">Fashion</a></li>
+                <li><a href="#" data-category="luxury">Luxury</a></li>
+                <li><a href="#" data-category="cars">Cars</a></li>
+                <li><a href="#" data-category="home">Home & Living</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="featured-section">
+            <h1>Discover Amazing Deals</h1>
+            <p>Buy and sell items easily in your local community</p>
+        </section>
+
+        <section class="listings-section">
+            <div class="listings-header">
+                <h2>Latest Listings</h2>
+                <div class="listings-filters">
+                    <select id="sortSelect">
+                        <option value="newest">Newest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+            <div id="listingsGrid" class="listings-grid">
+                <!-- Listings will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Login to MokeSell</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <button type="submit" class="submit-button">Login</button>
+            </form>
+            <button class="close-button" onclick="closeModal('loginModal')">×</button>
+        </div>
     </div>
 
-    <section id="home">
-        <h2>Welcome to the Marketplace</h2>
-        <p>Buy and sell items easily, connect with sellers, and enjoy exclusive rewards.</p>
-    </section>
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <h2>Create an Account</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <button type="submit" class="submit-button">Sign Up</button>
+            </form>
+            <button class="close-button" onclick="closeModal('signupModal')">×</button>
+        </div>
+    </div>
+
+    
+
+    <!-- Sell Modal -->
+    <div id="sellModal" class="modal">
+        <div class="modal-content">
+            <h2>Create New Listing</h2>
+            <form id="sellForm">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price ($)</label>
+                    <input type="number" id="price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="cars">Cars</option>
+                        <option value="home">Home & Living</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="image">Image URL</label>
+                    <input type="url" id="image" required>
+                </div>
+                <button type="submit" class="submit-button">Create Listing</button>
+            </form>
+            <button class="close-button" onclick="closeModal('sellModal')">×</button>
+        </div>
+    </div>
 
     <footer>
-        <p>&copy; 2025 Marketplace. All rights reserved.</p>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About MokeSell</h3>
+                    <p>Your trusted marketplace for buying and selling items in your local community.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Safety Tips</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>Email: support@mokesell.com</li>
+                        <li>Phone: (555) 123-4567</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MokeSell. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
-    <script src="script.js" defer></script>
+
+    <script src="script.js"></script>
 </body>
 </html>

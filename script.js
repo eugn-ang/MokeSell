@@ -1,72 +1,11 @@
 // RestDB Configuration
-const RESTDB_URL = 'https://fedproject-8e75.restdb.io/rest'; // Replace with your actual RestDB URL
-const RESTDB_KEY = '67a451d80b037fcaf6192cad'; // Add your RestDB API key here
+const RESTDB_URL = 'https://fedassignment2-cbbb.restdb.io/rest/usersapp'; // Replace with your actual RestDB URL
+const RESTDB_KEY = '67a471210b037f6ef8192cc2'; // Add your RestDB API key here
 
 // State management
 let listings = [];
 let currentUser = null;
 
-// API Functions
-async function fetchListings() {
-    try {
-        const response = await fetch(`${RESTDB_URL}/listings`, {
-            method: 'GET',
-            headers: {
-                'x-apikey': RESTDB_KEY,
-                'Content-Type': 'application/json'
-            }
-        });
-        listings = await response.json();
-        renderListings();
-    } catch (error) {
-        console.error('Error fetching listings:', error);
-        showNotification('Error loading listings', 'error');
-    }
-}
-
-async function createListing(listing) {
-    try {
-        const response = await fetch(`${RESTDB_URL}/listings`, {
-            method: 'POST',
-            headers: {
-                'x-apikey': RESTDB_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(listing)
-        });
-        const newListing = await response.json();
-        listings.unshift(newListing);
-        renderListings();
-        showNotification('Listing created successfully!', 'success');
-    } catch (error) {
-        console.error('Error creating listing:', error);
-        showNotification('Error creating listing', 'error');
-    }
-}
-
-// Updated login function to check 'useremail' and 'username'
-async function login(useremail, password, username = '') {
-    try {
-        const query = username ? `{"useremail": "${useremail}", "password": "${password}", "username": "${username}"}` : `{"useremail": "${useremail}", "password": "${password}"}`;
-        const response = await fetch(`${RESTDB_URL}/users?q=${encodeURIComponent(query)}`, {
-            method: 'GET',
-            headers: {
-                'x-apikey': RESTDB_KEY,
-                'Content-Type': 'application/json'
-            }
-        });
-        const users = await response.json();
-        if (users.length > 0) {
-            currentUser = users[0];
-            updateUIForLoggedInUser();
-            return true;
-        }
-        return false;
-    } catch (error) {
-        console.error('Error logging in:', error);
-        return false;
-    }
-}
 
 // UI Functions
 function renderListings(items = listings) {
@@ -137,8 +76,6 @@ function closeModal(modalId) {
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize
-    fetchListings();
-
     // Search functionality
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', (e) => {
@@ -196,23 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Form submissions
-    const loginForm = document.getElementById('loginForm');
+    
     const sellForm = document.getElementById('sellForm');
 
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const useremail = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        const success = await login(useremail, password);
-        if (success) {
-            showNotification('Login successful!', 'success');
-            closeModal('loginModal');
-            loginForm.reset();
-        } else {
-            showNotification('Invalid credentials', 'error');
-        }
-    });
+    
 
     sellForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -295,27 +219,39 @@ async function showListingDetails(id) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Event Listener for Sign Up Button
 const signupButton = document.getElementById('signupButton');
-
 signupButton.addEventListener('click', () => openModal('signupModal'));
-
 // Handle Sign Up Form submission
 const signupForm = document.getElementById('signupForm');
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const useremail = document.getElementById('signupEmail').value;
-    const username = document.getElementById('signupUsername').value;
-    const password = document.getElementById('signupPassword').value;
+    const Useremail = document.getElementById('signupEmail').value;
+    const Username = document.getElementById('signupUsername').value;
+    const Password = document.getElementById('signupPassword').value;
     
     const user = {
-        useremail,
-        username,
-        password
+        Useremail,
+        Username,
+        Password
     };
 
     try {
-        await fetch(`${RESTDB_URL}/users`, {
+        await fetch("https://fedassignment2-cbbb.restdb.io/rest/usersapp", {
             method: 'POST',
             headers: {
                 'x-apikey': RESTDB_KEY,
@@ -330,4 +266,58 @@ signupForm.addEventListener('submit', async (e) => {
         console.error('Error creating user account:', error);
         showNotification('Error creating account', 'error');
     }
+});
+
+// Event Listener for Login Button
+const loginButton = document.getElementById('loginButton');
+loginButton.addEventListener('click', () => openModal('loginModal'));
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    
+    if (!loginForm) {
+        console.error('Login form not found!');
+        return;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form values
+        const Username = document.getElementById('loginUsername')?.value;
+        const Useremail = document.getElementById('loginEmail')?.value;
+        const Password = document.getElementById('loginPassword')?.value;
+
+        // Debugging: Check if values exist
+        console.log("Username:", Username, "Email:", Useremail, "Password:", Password);
+        
+        
+
+        try {
+            const response = await fetch(`https://fedassignment2-cbbb.restdb.io/rest/usersapp?q={"Useremail": "${Useremail}","Username": "${Username}","Password": "${Password}"}`, {
+                method: 'GET',
+                headers: {
+                    'x-apikey': '67a471210b037f6ef8192cc2',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.length > 0) {
+                showNotification("Login successful!", "success");
+                console.log("User found:", data[0]); 
+                // You can store user session here
+                updateUIForLoggedInUser()
+                closeModal('loginModal');
+                
+            } else {
+                showNotification("Invalid credentials!", "error");
+                console.error("No matching user found.");
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            showNotification('Error logging in', 'error');
+        }
+    });
 });

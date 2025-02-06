@@ -79,17 +79,18 @@
             <h2>Login to MokeSell</h2>
             <form id="loginForm">
                 <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" required>
+                    <input type="email" id="loginEmail" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required>
+                    <input type="password" id="loginPassword" required>
                 </div>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" required>
-                </div>
+                
                 <button type="submit" class="submit-button">Login</button>
             </form>
             <button class="close-button" onclick="closeModal('loginModal')">×</button>

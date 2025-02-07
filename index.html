@@ -88,6 +88,7 @@
         </ul>
     </div>
 
+    
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
@@ -105,7 +106,10 @@
                     <label for="password">Password</label>
                     <input type="password" id="loginPassword" required>
                 </div>
-                
+
+                <!-- Error message placeholder -->
+                <p id="loginError" class="error-message" style="color: red; display: none;"></p>
+
                 <button type="submit" class="submit-button">Login</button>
             </form>
             <button class="close-button" onclick="closeModal('loginModal')">×</button>

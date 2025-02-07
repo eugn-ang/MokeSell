@@ -166,6 +166,7 @@ signupForm.addEventListener('submit', async (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     const loginButton = document.getElementById('loginButton');
     const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError'); // Get error message element
 
     // Check if a user is already logged in from previous sessions
     const savedUser = localStorage.getItem("currentUser");
@@ -219,14 +220,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Close login modal
                 closeModal('loginModal'); 
 
-                // Clear form fields
+                // Clear form fields and hide error message
                 loginForm.reset();
+                loginError.style.display = "none";
             } else {
-                showNotification("Invalid credentials!", "error");
+                // Show error message inside the modal
+                loginError.textContent = "Error: Invalid Credentials";
+                loginError.style.display = "block";
             }
         } catch (error) {
             console.error('Error during login:', error);
-            showNotification('Error logging in', 'error');
+            loginError.textContent = "Error logging in. Please try again.";
+            loginError.style.display = "block";
         }
     });
 });

@@ -21,7 +21,7 @@ function renderListings(items) {
 
     // Generate HTML for each listing
     listingsGrid.innerHTML = items.map(item => `
-        <div class="listing-card" onclick="showListingDetails('${item._id}')">
+        <div class="listing-card" onclick="window.location.href='listing-details.html?id=${item._id}'">
             <img src="${item.image || 'https://via.placeholder.com/150'}" 
                  alt="${item.title}" 
                  class="listing-image">
@@ -35,7 +35,6 @@ function renderListings(items) {
         </div>
     `).join('');
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     // Add event listeners to category links
     const categoryLinks = document.querySelectorAll('.category-nav a[data-category]');
@@ -349,4 +348,70 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.style.display = "block";
         }
     });
+});
+
+document.getElementById('sellButton').addEventListener('click', () => {
+    openModal('sellModal');
+});
+
+
+// Event Listener for the Sell Form
+const sellForm = document.getElementById('sellForm');
+sellForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Check if user is logged in
+    if (!currentUser) {
+        showNotification('You must be logged in to post a listing.', 'error');
+        return;
+    }
+
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('price').value;
+    const category = document.getElementById('category').value;
+    const image = document.getElementById('image').value;
+    const condition = document.getElementById('condition').value;
+
+    // Check if all fields are filled
+    if (!title || !description || !price || !category || !image || !condition) {
+        showNotification('Please fill out all fields before submitting.', 'error');
+        return;
+    }
+
+    // Validate price to ensure it's a valid number
+    if (isNaN(price) || price <= 0) {
+        showNotification('Please enter a valid price.', 'error');
+        return;
+    }
+
+    try {
+        const newListing = {
+            title,
+            description,
+            price,
+            category,
+            image,
+            condition
+        };
+
+        // Send the data to the backend to create the listing
+        const response = await fetch('https://fedassignment2-cbbb.restdb.io/rest/listings', {
+            method: 'POST',
+            headers: {
+                'x-apikey': RESTDB_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newListing)
+        });
+
+        if (response.ok) {
+            showNotification('Your listing has been posted successfully!', 'success');
+        } else {
+            showNotification('Something went wrong. Please try again later.', 'error');
+        }
+
+    } catch (error) {
+        showNotification('An error occurred. Please try again later.', 'error');
+    }
 });

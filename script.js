@@ -7,7 +7,6 @@ let listings = [];
 let currentUser = null;
 
 
-// UI Functions
 function renderListings(items) {
     const listingsGrid = document.getElementById('listingsGrid');
     if (!listingsGrid) return;
@@ -28,11 +27,10 @@ function renderListings(items) {
                  class="listing-image">
             <div class="listing-details">
                 <h3 class="listing-title">${item.title}</h3>
-                <p class="listing-price">$${parseFloat(item.price).toFixed(2)}</p>
-                <div class="listing-meta">
-                    <span>${item.category}</span>
-                    <span>${formatRelativeTime(item.created_at)}</span>
-                </div>
+                <p class="listing-price">Price: $${parseFloat(item.price).toFixed(2)}</p>
+                <p class="listing-condition">Condition: ${item.condition || 'N/A'}</p>
+                <p class="listing-category">Category: ${item.category}</p>
+                <p class="listing-description">${item.details || 'No details available.'}</p>
             </div>
         </div>
     `).join('');
@@ -56,7 +54,7 @@ async function loadCategory(category) {
 
     try {
         // Fetch listings from the database based on the category
-        const response = await fetch(`${RESTDB_URL}/listings?q={"category":"${category}"}`, {
+        const response = await fetch(`https://fedassignment2-cbbb.restdb.io/rest/listings?q={"category":"${category}"}`, {
             method: 'GET',
             headers: {
                 'x-apikey': RESTDB_KEY,
@@ -74,33 +72,43 @@ async function loadCategory(category) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if there's a category in the URL and load it
     const urlParams = new URLSearchParams(window.location.search);
     const category = urlParams.get('category');
 
     if (category) {
         loadCategory(category); // Load listings for the specified category
     } else {
-        fetchListings(); // Load all listings if no category is specified
+        fetchListings(); // Load random listings if no category is specified
     }
 });
 
 async function fetchListings() {
     try {
-        const response = await fetch(`${RESTDB_URL}/listings`, {
+        const response = await fetch("https://fedassignment2-cbbb.restdb.io/rest/listings", {
             method: 'GET',
             headers: {
                 'x-apikey': RESTDB_KEY,
                 'Content-Type': 'application/json'
             }
         });
+
         const data = await response.json();
-        renderListings(data); // Render all listings
+
+        if (data.length > 0) {
+            // Shuffle and show random listings
+            const shuffledListings = data.sort(() => 0.5 - Math.random());
+            const randomListings = shuffledListings.slice(0, 5); // Display 5 random listings
+            renderListings(randomListings);
+        } else {
+            console.warn('No listings available.');
+            renderListings([]); // Display no items found message
+        }
     } catch (error) {
         console.error('Error fetching listings:', error);
         showNotification('Error loading listings', 'error');
     }
 }
+
 
 function formatRelativeTime(dateString) {
     const date = new Date(dateString);

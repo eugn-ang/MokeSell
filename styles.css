@@ -395,3 +395,52 @@ footer {
 .signup-button:hover {
     background-color: #45a049; /* Hover effect */
 }
+
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 250px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.sidebar.open {
+    right: 0;
+}
+
+.sidebar .close-sidebar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar-menu li {
+    padding: 10px 0;
+}
+
+.sidebar-menu li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    display: block;
+}
+
+.sidebar-menu li a:hover {
+    color: var(--primary-color);
+}

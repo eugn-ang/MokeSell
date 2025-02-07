@@ -8,23 +8,98 @@ let currentUser = null;
 
 
 // UI Functions
-function renderListings(items = listings) {
+function renderListings(items) {
     const listingsGrid = document.getElementById('listingsGrid');
-    listingsGrid.innerHTML = items.map(listing => `
-        <div class="listing-card" onclick="showListingDetails('${listing._id}')">
-            <img src="${listing.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'}" 
-                 alt="${listing.title}" 
+    if (!listingsGrid) return;
+
+    // Clear existing listings
+    listingsGrid.innerHTML = '';
+
+    if (items.length === 0) {
+        listingsGrid.innerHTML = '<p>No items found in this category.</p>';
+        return;
+    }
+
+    // Generate HTML for each listing
+    listingsGrid.innerHTML = items.map(item => `
+        <div class="listing-card" onclick="showListingDetails('${item._id}')">
+            <img src="${item.image || 'https://via.placeholder.com/150'}" 
+                 alt="${item.title}" 
                  class="listing-image">
             <div class="listing-details">
-                <h3 class="listing-title">${listing.title}</h3>
-                <p class="listing-price">$${parseFloat(listing.price).toFixed(2)}</p>
+                <h3 class="listing-title">${item.title}</h3>
+                <p class="listing-price">$${parseFloat(item.price).toFixed(2)}</p>
                 <div class="listing-meta">
-                    <span>${listing.category}</span>
-                    <span>${formatRelativeTime(listing.created_at)}</span>
+                    <span>${item.category}</span>
+                    <span>${formatRelativeTime(item.created_at)}</span>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listeners to category links
+    const categoryLinks = document.querySelectorAll('.category-nav a[data-category]');
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default link behavior
+            const category = e.target.dataset.category; // Get the category from the data attribute
+            loadCategory(category); // Call the loadCategory function
+        });
+    });
+});
+
+async function loadCategory(category) {
+    // Update the URL with the selected category
+    history.pushState({}, "", `?category=${category}`);
+
+    try {
+        // Fetch listings from the database based on the category
+        const response = await fetch(`${RESTDB_URL}/listings?q={"category":"${category}"}`, {
+            method: 'GET',
+            headers: {
+                'x-apikey': RESTDB_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+
+        // Render the filtered listings
+        renderListings(data);
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        showNotification('Error loading listings', 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if there's a category in the URL and load it
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+
+    if (category) {
+        loadCategory(category); // Load listings for the specified category
+    } else {
+        fetchListings(); // Load all listings if no category is specified
+    }
+});
+
+async function fetchListings() {
+    try {
+        const response = await fetch(`${RESTDB_URL}/listings`, {
+            method: 'GET',
+            headers: {
+                'x-apikey': RESTDB_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        renderListings(data); // Render all listings
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        showNotification('Error loading listings', 'error');
+    }
 }
 
 function formatRelativeTime(dateString) {

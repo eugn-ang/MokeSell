@@ -32,6 +32,7 @@
         }, 3000);
     }
 
+<<<<<<< HEAD
     function updateUIForLoggedInUser() {
         const loginButton = document.getElementById('loginButton');
         loginButton.innerHTML = `
@@ -49,12 +50,77 @@
         document.getElementById(modalId).style.display = 'block';
         document.body.style.overflow = 'hidden';
     }
+=======
+function updateUIForLoggedInUser(user) {
+    currentUser = user; // Assign user to global variable
+
+    const loginButton = document.getElementById('loginButton');
+
+    // Change login button to profile icon
+    loginButton.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="7" r="4"/>
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+        </svg>
+    `;
+
+    // Remove previous event listeners to avoid duplication
+    loginButton.replaceWith(loginButton.cloneNode(true));
+    const newLoginButton = document.getElementById('loginButton');
+
+    // Attach the sidebar toggle function
+    newLoginButton.addEventListener('click', toggleSidebar);
+    // Hide Sign-Up button
+    if (signupButton) {
+        signupButton.style.display = "none";
+    }
+}
+
+
+// Toggle Sidebar Visibility
+function toggleSidebar() {
+    if (!currentUser) {
+        showNotification("Please log in to access your profile!", "warning");
+        return; // Prevent sidebar from opening
+    }
+
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+
+}
+// Logout Function
+function logoutUser() {
+    localStorage.removeItem("currentUser"); // Clear user session
+    currentUser = null;
+
+    // Reset login button
+    const loginButton = document.getElementById("loginButton");
+    loginButton.innerHTML = "Login";
+    loginButton.onclick = () => openModal('loginModal');
+
+    // Close sidebar if open
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.remove("open");
+    // Show Sign-Up button again
+    if (signupButton) {
+        signupButton.style.display = "inline-block"; 
+    }
+}
+
+
+// Modal Functions
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+>>>>>>> 2f41f9ba2110401770e9f88117e958e069e7afbf
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 
+<<<<<<< HEAD
     // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         // Initialize
@@ -147,6 +213,85 @@
 
     // Show listing details
     async function showListingDetails(id) {
+=======
+
+
+
+// Event Listener for Sign Up Button
+const signupButton = document.getElementById('signupButton');
+signupButton.addEventListener('click', () => openModal('signupModal'));
+// Handle Sign Up Form submission
+const signupForm = document.getElementById('signupForm');
+signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const Useremail = document.getElementById('signupEmail').value;
+    const Username = document.getElementById('signupUsername').value;
+    const Password = document.getElementById('signupPassword').value;
+    
+    const user = {
+        Useremail,
+        Username,
+        Password
+    };
+
+    try {
+        await fetch("https://fedassignment2-cbbb.restdb.io/rest/usersapp", {
+            method: 'POST',
+            headers: {
+                'x-apikey': RESTDB_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        });
+        showNotification('Account created successfully!', 'success');
+        closeModal('signupModal');
+        signupForm.reset();
+    } catch (error) {
+        console.error('Error creating user account:', error);
+        showNotification('Error creating account', 'error');
+    }
+});
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginButton = document.getElementById('loginButton');
+    const loginForm = document.getElementById('loginForm');
+
+    // Check if a user is already logged in from previous sessions
+    const savedUser = localStorage.getItem("currentUser");
+    if (savedUser) {
+        updateUIForLoggedInUser(JSON.parse(savedUser));
+    }
+
+    // Ensure login button only opens modal when user is NOT logged in
+    loginButton.addEventListener('click', () => {
+        if (!currentUser) {
+            openModal('loginModal');
+        } else {
+            toggleSidebar();
+        }
+    });
+
+    if (!loginForm) {
+        console.error('Login form not found!');
+        return;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form values
+        const Username = document.getElementById('loginUsername')?.value;
+        const Useremail = document.getElementById('loginEmail')?.value;
+        const Password = document.getElementById('loginPassword')?.value;
+
+>>>>>>> 2f41f9ba2110401770e9f88117e958e069e7afbf
         try {
             const response = await fetch(`${RESTDB_URL}/listings/${id}`, {
                 method: 'GET',
@@ -180,6 +325,7 @@
             document.body.appendChild(modal);
             document.body.style.overflow = 'hidden';
 
+<<<<<<< HEAD
             modal.querySelector('.contact-seller-btn').onclick = () => {
                 if (currentUser) {
                     showNotification('Message sent to seller!', 'success');
@@ -195,6 +341,26 @@
                     document.body.style.overflow = 'auto';
                 }
             };
+=======
+            if (data.length > 0) {
+                showNotification("Login successful!", "success");
+                console.log("User found:", data[0]); 
+
+                // Store user session in local storage
+                localStorage.setItem("currentUser", JSON.stringify(data[0]));
+
+                // Update UI
+                updateUIForLoggedInUser(data[0]);
+
+                // Close login modal
+                closeModal('loginModal'); 
+
+                // Clear form fields
+                loginForm.reset();
+            } else {
+                showNotification("Invalid credentials!", "error");
+            }
+>>>>>>> 2f41f9ba2110401770e9f88117e958e069e7afbf
         } catch (error) {
             console.error('Error fetching listing details:', error);
             showNotification('Error loading listing details', 'error');
@@ -225,6 +391,7 @@
             fetchListings(); // Load all listings if no category is specified
         }
     });
+<<<<<<< HEAD
 
     async function loadListings(category = null) {
         const listingsGrid = document.getElementById('listingsGrid');
@@ -392,3 +559,6 @@
             }
         });
     });
+=======
+});
+>>>>>>> 2f41f9ba2110401770e9f88117e958e069e7afbf

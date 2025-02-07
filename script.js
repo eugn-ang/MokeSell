@@ -124,38 +124,70 @@ function closeModal(modalId) {
 // Event Listener for Sign Up Button
 const signupButton = document.getElementById('signupButton');
 signupButton.addEventListener('click', () => openModal('signupModal'));
-// Handle Sign Up Form submission
-const signupForm = document.getElementById('signupForm');
-signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const Useremail = document.getElementById('signupEmail').value;
-    const Username = document.getElementById('signupUsername').value;
-    const Password = document.getElementById('signupPassword').value;
-    
-    const user = {
-        Useremail,
-        Username,
-        Password
-    };
+document.addEventListener('DOMContentLoaded', () => {
+    const signupForm = document.getElementById('signupForm');
+    const signupError = document.getElementById('signupError');
 
-    try {
-        await fetch("https://fedassignment2-cbbb.restdb.io/rest/usersapp", {
-            method: 'POST',
-            headers: {
-                'x-apikey': RESTDB_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        showNotification('Account created successfully!', 'success');
-        closeModal('signupModal');
-        signupForm.reset();
-    } catch (error) {
-        console.error('Error creating user account:', error);
-        showNotification('Error creating account', 'error');
-    }
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const Useremail = document.getElementById('signupEmail').value;
+        const Username = document.getElementById('signupUsername').value;
+        const Password = document.getElementById('signupPassword').value;
+
+        try {
+            // Check if email or username already exists
+            const checkResponse = await fetch(`${RESTDB_URL}?q={"$or":[{"Useremail": "${Useremail}"}, {"Username": "${Username}"}]}`, {
+                method: 'GET',
+                headers: {
+                    'x-apikey': RESTDB_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const existingUsers = await checkResponse.json();
+
+            if (existingUsers.length > 0) {
+                // If a user with the same email or username exists, show an error
+                signupError.textContent = "Error: Email or username is already in use.";
+                signupError.style.display = "block";
+                return; // Stop execution
+            }
+
+            // If no existing user is found, proceed with account creation
+            const newUser = { Useremail, Username, Password };
+
+            const createResponse = await fetch(RESTDB_URL, {
+                method: 'POST',
+                headers: {
+                    'x-apikey': RESTDB_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newUser)
+            });
+
+            if (createResponse.ok) {
+                // Show success popup
+                openModal('successPopup');
+                
+                // Close the sign-up modal
+                closeModal('signupModal');
+                
+                // Reset form fields
+                signupForm.reset();
+                
+                // Hide any previous error messages
+                signupError.style.display = "none"; 
+            } else {
+                throw new Error('Failed to create account.');
+            }
+        } catch (error) {
+            console.error('Error creating user account:', error);
+            signupError.textContent = "Error creating account. Please try again.";
+            signupError.style.display = "block";
+        }
+    });
 });
-
 
 
 

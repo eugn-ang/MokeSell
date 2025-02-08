@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MokeSell</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">MokeSell</a>
+            </div>
+            <nav class="nav-buttons">
+                
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="profile-section">
+            <h1>My Profile</h1>
+            <div class="profile-card">
+                <img id="profilePicture" src="https://via.placeholder.com/100" alt="User Profile Picture">
+                <h2 id="profileUsername">Username</h2>
+                <p><strong>Email:</strong> <span id="profileEmail">example@example.com</span></p>
+            </div>
+
+            <h2>My Listings</h2>
+            <div id="userListings" class="listings-grid">
+                <!-- User listings will be inserted here dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 MokeSell. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+            if (!currentUser) {
+                window.location.href = "index.html"; // Redirect to home if not logged in
+                return;
+            }
+
+            // Populate user info
+            document.getElementById("profileUsername").textContent = currentUser.Username;
+            document.getElementById("profileEmail").textContent = currentUser.Useremail;
+
+            // Load user listings
+            fetchUserListings(currentUser.Username);
+        });
+
+        async function fetchUserListings(username) {
+            try {
+                const response = await fetch(`https://fedassignment2-cbbb.restdb.io/rest/listings?q={"Username":"${username}"}`, {
+                    method: 'GET',
+                    headers: {
+                        'x-apikey': '67a471210b037f6ef8192cc2',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const listings = await response.json();
+                const listingsGrid = document.getElementById("userListings");
+
+                if (listings.length === 0) {
+                    listingsGrid.innerHTML = "<p>You haven't listed any items yet.</p>";
+                    return;
+                }
+
+                listingsGrid.innerHTML = listings.map(item => `
+                    <div class="listing-card">
+                        <img src="https://fedassignment2-cbbb.restdb.io/media/${item.image[0]}?s=w" alt="${item.title}" class="listing-image">
+                        <div class="listing-details">
+                            <h3 class="listing-title">${item.title}</h3>
+                            <p class="listing-price">Price: $${parseFloat(item.price).toFixed(2)}</p>
+                            <p class="listing-condition">Condition: ${item.condition}</p>
+                            <p class="listing-category">Category: ${item.category}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching user listings:', error);
+            }
+        }
+    </script>
+</body>
+</html>

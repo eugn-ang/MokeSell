@@ -97,24 +97,30 @@
             }
         }
 
-        function renderListingDetails(listing) {
-            const listingDetails = document.getElementById('listingDetails');
-            listingDetails.innerHTML = `
-                <div class="listing-detail-card">
-                    <img src="${listing.image || 'https://via.placeholder.com/150'}" 
-                         alt="${listing.title}" 
-                         class="listing-detail-image">
-                    <div class="listing-detail-info">
-                        <h1 class="listing-detail-title">${listing.title}</h1>
-                        <p class="listing-detail-price">Price: $${parseFloat(listing.price).toFixed(2)}</p>
-                        <p class="listing-detail-condition">Condition: ${listing.condition || 'N/A'}</p>
-                        <p class="listing-detail-category">Category: ${listing.category}</p>
-                        <p class="listing-detail-description">${listing.details || 'No details available.'}</p>
-                        <button class="contact-seller-button">Contact Seller</button>
-                    </div>
+            function renderListingDetails(listing) {
+        const listingDetails = document.getElementById('listingDetails');
+        const imageUrl = listing.image && listing.image.length > 0 
+            ? `https://fedassignment2-cbbb.restdb.io/media/${listing.image[0]}`
+            : 'https://via.placeholder.com/150';
+
+        listingDetails.innerHTML = `
+            <div class="listing-detail-card">
+                <img src="${imageUrl}" 
+                    alt="${listing.title}" 
+                    class="listing-detail-image">
+                <div class="listing-detail-info">
+                    <h1 class="listing-detail-title">${listing.title}</h1>
+                    <p class="listing-detail-price">Price: $${parseFloat(listing.price).toFixed(2)}</p>
+                    <p class="listing-detail-condition">Condition: ${listing.condition || 'N/A'}</p>
+                    <p class="listing-detail-category">Category: ${listing.category}</p>
+                    <p class="listing-detail-description">${listing.details || 'No details available.'}</p>
+                    <p class="listing-detail-username">Listed by: ${listing.Username || 'Unknown'}</p>
+                    <button class="contact-seller-button">Contact Seller</button>
                 </div>
-            `;
-        }
+            </div>
+        `;
+    }
+
     </script>
 </body>
 </html>

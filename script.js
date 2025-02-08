@@ -1,6 +1,10 @@
 // RestDB Configuration
 const RESTDB_URL = 'https://fedassignment2-cbbb.restdb.io/rest/usersapp'; // Replace with your actual RestDB URL
 const RESTDB_KEY = '67a471210b037f6ef8192cc2'; // Add your RestDB API key here
+let imageUrl = 'https://via.placeholder.com/150';
+onerror="this.onerror=null;this.src='https://via.placeholder.com/150';"
+
+
 
 // State management
 let listings = [];
@@ -11,7 +15,6 @@ function renderListings(items) {
     const listingsGrid = document.getElementById('listingsGrid');
     if (!listingsGrid) return;
 
-    // Clear existing listings
     listingsGrid.innerHTML = '';
 
     if (items.length === 0) {
@@ -19,22 +22,59 @@ function renderListings(items) {
         return;
     }
 
-    // Generate HTML for each listing
-    listingsGrid.innerHTML = items.map(item => `
-        <div class="listing-card" onclick="window.location.href='listing-details.html?id=${item._id}'">
-            <img src="${item.image || 'https://via.placeholder.com/150'}" 
-                 alt="${item.title}" 
-                 class="listing-image">
-            <div class="listing-details">
-                <h3 class="listing-title">${item.title}</h3>
-                <p class="listing-price">Price: $${parseFloat(item.price).toFixed(2)}</p>
-                <p class="listing-condition">Condition: ${item.condition || 'N/A'}</p>
-                <p class="listing-category">Category: ${item.category}</p>
-                <p class="listing-description">${item.details || 'No details available.'}</p>
+    listingsGrid.innerHTML = items.map(item => {
+        let imageUrl = 'https://via.placeholder.com/150'; // Default placeholder image
+
+        // Check if the image field exists and has at least one Media Archive ID
+        if (item.image && Array.isArray(item.image) && item.image.length > 0) {
+            const imageId = item.image[0];
+            imageUrl = `https://fedassignment2-cbbb.restdb.io/media/${imageId}?s=w`;
+        }
+
+        return `
+            <div class="listing-card" onclick="window.location.href='listing-details.html?id=${item._id}'">
+                <img src="${imageUrl}" 
+                     alt="${item.title}" 
+                     class="listing-image" 
+                     onerror="this.onerror=null;this.src='https://via.placeholder.com/150';">
+                <div class="listing-details">
+                    <h3 class="listing-title">${item.title}</h3>
+                    <p class="listing-price">Price: $${parseFloat(item.price).toFixed(2)}</p>
+                    <p class="listing-condition">Condition: ${item.condition || 'N/A'}</p>
+                    <p class="listing-category">Category: ${item.category}</p>
+                    <p class="listing-description">${item.details || 'No details available.'}</p>
+                    <p class="listing-username">Listed by: ${item.Username || 'Unknown'}</p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
+
+async function addListing(newListing) {
+    try {
+        const response = await fetch('https://fedassignment2-cbbb.restdb.io/rest/listings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-apikey': 'YOUR_RESTDB_API_KEY'
+            },
+            body: JSON.stringify(newListing)
+        });
+
+        if (response.ok) {
+            const createdListing = await response.json();
+            console.log('Listing created:', createdListing);
+            showNotification('Listing created successfully!', 'success');
+        } else {
+            console.error('Failed to create listing:', response.statusText);
+            showNotification('Failed to create listing. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Error creating listing:', error);
+        showNotification('Error creating listing. Please try again.', 'error');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Add event listeners to category links
     const categoryLinks = document.querySelectorAll('.category-nav a[data-category]');
@@ -80,12 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchListings(); // Load random listings if no category is specified
     }
 
-    const sellButton = document.getElementById('sellButton');
-    sellButton.addEventListener('click', () => {
-        if (sellButton.disabled) {
-            alert('You must be logged in to start selling.')
-        }
-    });
+    
 });
 
 async function fetchListings() {
@@ -368,14 +403,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.getElementById('sellButton').addEventListener('click', () => {
-    if (!currentUser) {
-        showNotification('You must be logged in to post a listing.', 'warning');
-        return;
-    }
-    openModal('sellModal');
-});
+document.addEventListener('DOMContentLoaded', () => {
+    const sellButton = document.getElementById('sellButton');
 
+    sellButton.addEventListener('click', () => {
+        if (!currentUser) {
+            console.log("User not logged in. Showing login required popup."); // Debugging
+            openModal('loginRequiredPopup'); // Ensure this modal exists in HTML
+            return;
+        }
+
+        // If user is logged in, open the Sell modal
+        openModal('sellModal');
+    });
+});
 
 // Event Listener for the Sell Form
 const sellForm = document.getElementById('sellForm');
@@ -414,7 +455,8 @@ sellForm.addEventListener('submit', async (e) => {
             price,
             category,
             image,
-            condition
+            condition,
+            Username: currentUser.Username
         };
 
         // Send the data to the backend to create the listing

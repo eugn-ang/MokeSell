@@ -479,3 +479,62 @@ sellForm.addEventListener('submit', async (e) => {
         showNotification('An error occurred. Please try again later.', 'error');
     }
 });
+
+
+// search bar
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.querySelector('.search-button');
+
+    // Event Listener for the Search Button
+    searchButton.addEventListener('click', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        if (query) {
+            searchListings(query);
+        }
+    });
+
+    // Allow searching when pressing "Enter" in the input field
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const query = searchInput.value.trim().toLowerCase();
+            if (query) {
+                searchListings(query);
+            }
+        }
+    });
+});
+
+// Function to Fetch and Filter Listings Based on Search Query
+async function searchListings(query) {
+    try {
+        const response = await fetch("https://fedassignment2-cbbb.restdb.io/rest/listings", {
+            method: 'GET',
+            headers: {
+                'x-apikey': RESTDB_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const listings = await response.json();
+
+        // Filter Listings Based on Search Query (Matches Title or Description)
+        const filteredListings = listings.filter(item =>
+            item.title.toLowerCase().includes(query) ||
+            item.details.toLowerCase().includes(query)
+        );
+
+        // Render Search Results
+        renderListings(filteredListings);
+
+        // If no results found, show a message
+        if (filteredListings.length === 0) {
+            document.getElementById('listingsGrid').innerHTML = '<p>No items found matching your search.</p>';
+        }
+
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        showNotification('Error searching listings. Please try again.', 'error');
+    }
+}

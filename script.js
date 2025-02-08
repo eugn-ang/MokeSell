@@ -79,6 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         fetchListings(); // Load random listings if no category is specified
     }
+
+    const sellButton = document.getElementById('sellButton');
+    sellButton.addEventListener('click', () => {
+        if (sellButton.disabled) {
+            alert('You must be logged in to start selling.')
+        }
+    });
 });
 
 async function fetchListings() {
@@ -136,6 +143,7 @@ function updateUIForLoggedInUser(user) {
     currentUser = user; // Assign user to global variable
 
     const loginButton = document.getElementById('loginButton');
+    const sellButton = document.getElementById('sellButton');
 
     // Change login button to profile icon
     loginButton.innerHTML = `
@@ -144,6 +152,10 @@ function updateUIForLoggedInUser(user) {
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
         </svg>
     `;
+    // Enable the Sell button
+    if (sellButton) {
+        sellButton.disabled = false;
+    }
 
     // Remove previous event listeners to avoid duplication
     loginButton.replaceWith(loginButton.cloneNode(true));
@@ -185,6 +197,12 @@ function logoutUser() {
     // Show Sign-Up button again
     if (signupButton) {
         signupButton.style.display = "inline-block"; 
+    }
+
+    const sellButton = document.getElementById("sellButton");
+    // Disable the Sell button
+    if (sellButton) {
+        sellButton.disabled = true;
     }
 }
 
@@ -351,6 +369,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.getElementById('sellButton').addEventListener('click', () => {
+    if (!currentUser) {
+        showNotification('You must be logged in to post a listing.', 'warning');
+        return;
+    }
     openModal('sellModal');
 });
 

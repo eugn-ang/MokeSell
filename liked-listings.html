@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Listings - MokeSell</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">MokeSell</a>
+            </div>
+            <nav class="nav-buttons">
+                <button id="loginButton" class="login-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Login
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="liked-listings-section">
+            <h1>Your Liked Listings</h1>
+            <div id="likedListingsGrid" class="listings-grid">
+                <!-- Liked listings will be displayed here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Get all listings from the database
+            try {
+                const response = await fetch("https://fedassignment2-cbbb.restdb.io/rest/listings", {
+                    method: 'GET',
+                    headers: {
+                        'x-apikey': '67a471210b037f6ef8192cc2',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const allListings = await response.json();
+                
+                // Filter listings that the user has liked
+                const likedListings = allListings.filter(listing => {
+                    const likeCount = parseInt(localStorage.getItem(`likes-${listing._id}`)) || 0;
+                    return likeCount > 0;
+                });
+
+                // Render liked listings
+                const likedListingsGrid = document.getElementById('likedListingsGrid');
+                
+                if (likedListings.length === 0) {
+                    likedListingsGrid.innerHTML = '<p>You haven\'t liked any listings yet.</p>';
+                    return;
+                }
+
+                likedListingsGrid.innerHTML = likedListings.map(item => {
+                    const likeCount = localStorage.getItem(`likes-${item._id}`) || 0;
+                    let imageUrl = item.image || 'https://via.placeholder.com/150';
+
+                    return `
+                        <div class="listing-card" onclick="window.location.href='listing-details.html?id=${item._id}'">
+                            <img src="${imageUrl}" 
+                                 alt="${item.title}" 
+                                 class="listing-image" 
+                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/150';">
+                            <div class="listing-details">
+                                <h3 class="listing-title">${item.title}</h3>
+                                <p class="listing-price">Price: $${parseFloat(item.price).toFixed(2)}</p>
+                                <p class="listing-condition">Condition: ${item.condition || 'N/A'}</p>
+                                <p class="listing-category">Category: ${item.category}</p>
+                                <p class="listing-description">${item.details || 'No details available.'}</p>
+                                <p class="listing-username">Listed by: ${item.Username || 'Unknown'}</p>
+                                <p class="like-count">❤️ ${likeCount}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error fetching liked listings:', error);
+                document.getElementById('likedListingsGrid').innerHTML = 
+                    '<p>Error loading liked listings. Please try again later.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

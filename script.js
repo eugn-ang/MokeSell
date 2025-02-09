@@ -448,6 +448,12 @@ sellForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    // Inside the sellForm submit event listener
+    if (response.ok) {
+        showNotification('Your listing has been posted successfully!', 'success');
+        addRewardPoints(10); // Add 10 points for creating a listing
+    }
+
     try {
         const newListing = {
             title,
@@ -538,3 +544,106 @@ async function searchListings(query) {
         showNotification('Error searching listings. Please try again.', 'error');
     }
 }
+
+
+
+function renderListingDetails(listing) {
+    const listingDetails = document.getElementById('listingDetails');
+    const imageUrl = listing.image && listing.image.length > 0
+        ? `https://fedassignment2-cbbb.restdb.io/media/${listing.image[0]}`
+        : 'https://via.placeholder.com/150';
+
+    // Retrieve like count from localStorage or default to 0
+    const likeCount = localStorage.getItem(`likes-${listing._id}`) || 0;
+
+    listingDetails.innerHTML = `
+        <div class="listing-detail-card">
+            <img src="${imageUrl}" 
+                alt="${listing.title}" 
+                class="listing-detail-image">
+            <div class="listing-detail-info">
+                <h1 class="listing-detail-title">${listing.title}</h1>
+                <p class="listing-detail-price">Price: $${parseFloat(listing.price).toFixed(2)}</p>
+                <p class="listing-detail-condition">Condition: ${listing.condition || 'N/A'}</p>
+                <p class="listing-detail-category">Category: ${listing.category}</p>
+                <p class="listing-detail-description">${listing.details || 'No details available.'}</p>
+                <p class="listing-detail-username">Listed by: ${listing.Username || 'Unknown'}</p>
+                
+                <button id="likeButton" class="like-button">
+                    ❤️ <span id="likeCount">${likeCount}</span>
+                </button>
+
+                <button class="contact-seller-button">Contact Seller</button>
+            </div>
+        </div>
+    `;
+
+    // Add event listener for the like button
+    document.getElementById('likeButton').addEventListener('click', () => likeListing(listing._id));
+}
+
+
+function likeListing(listingId) {
+    let currentLikes = parseInt(localStorage.getItem(`likes-${listingId}`)) || 0;
+    currentLikes++;
+    localStorage.setItem(`likes-${listingId}`, currentLikes);
+    document.getElementById('likeCount').textContent = currentLikes;
+
+    // Add 5 points for liking a listing
+    addRewardPoints(5);
+}
+
+// Function to initialize rewards
+function initializeRewards() {
+    if (!localStorage.getItem('rewardsPoints')) {
+        localStorage.setItem('rewardsPoints', '0');
+    }
+    if (!localStorage.getItem('rewardsHistory')) {
+        localStorage.setItem('rewardsHistory', JSON.stringify([]));
+    }
+}
+
+// Function to add points
+function addRewardPoints(points) {
+    const currentPoints = parseInt(localStorage.getItem('rewardsPoints'));
+    const newPoints = currentPoints + points;
+    localStorage.setItem('rewardsPoints', newPoints.toString());
+
+    // Add to rewards history
+    const history = JSON.parse(localStorage.getItem('rewardsHistory'));
+    history.push({ points, date: new Date().toLocaleString() });
+    localStorage.setItem('rewardsHistory', JSON.stringify(history));
+
+    // Update UI if on rewards page
+    if (window.location.pathname.includes('rewards.html')) {
+        updateRewardsUI();
+    }
+}
+
+// Function to update rewards UI
+function updateRewardsUI() {
+    const pointsBalance = document.getElementById('pointsBalance');
+    const rewardsList = document.getElementById('rewardsList');
+
+    if (pointsBalance) {
+        pointsBalance.textContent = localStorage.getItem('rewardsPoints');
+    }
+
+    if (rewardsList) {
+        const history = JSON.parse(localStorage.getItem('rewardsHistory'));
+        rewardsList.innerHTML = history.map(entry => `
+            <li>
+                <span>+${entry.points} points</span>
+                <span>${entry.date}</span>
+            </li>
+        `).join('');
+    }
+}
+
+// Call initializeRewards when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeRewards();
+    if (window.location.pathname.includes('rewards.html')) {
+        updateRewardsUI();
+    }
+});

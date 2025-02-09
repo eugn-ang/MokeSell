@@ -42,3 +42,6 @@ MokeSell is a marketplace platform that allows users to buy and sell items effic
 ## 🎨 Design & Wireframe
 The UI/UX wireframe for MokeSell is available on **Figma**:
 [Wireframe Link](https://www.figma.com/design/LyBl6QukIuruJvEUNYbEvA/wireframe?node-id=26-2&t=w3mqupgySztpf3pn-1)
+
+## Video
+[video link](https://drive.google.com/file/d/1PVMysUs5vYMX1buuOKKlJ_s0USujiImw/view?usp=sharing)
